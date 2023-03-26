@@ -6,6 +6,7 @@
 
 body {
   font-family: 'Courier New', Courier, monospace;
+
   /* font-family: 'Lato', sans-serif; */
 }
 
@@ -46,6 +47,7 @@ header nav ul li {
 .header-title {
   padding-top: 30px;
   font-family: 'Sacramento', cursive;
+  font-size: 4rem;
 }
 
 #add-book {
@@ -62,11 +64,14 @@ header nav ul li {
 .contact h2 {
   align-self: center;
   margin: 3rem auto;
-  font-family: 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+  font-family: 'Sacramento', cursive;
+  font-size: 4rem;
 }
 
 #add-book h2 {
   align-self: center;
+  font-family: 'Sacramento', cursive;
+  font-size: 4rem;
 }
 
 form {
