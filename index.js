@@ -1,39 +1,20 @@
 import Book from './modules/Book.js';
+import Storage from './modules/storage.js';
+import DateTime from './node_modules/luxon/src/datetime.js';
 
-class Library {
+export default class Library {
   constructor() {
-    this.books = [
-      new Book(0, 'Married with Zombies', 'Jesse Petersen'),
-      new Book(1, 'Feed', 'Mira Grant'),
-      new Book(2, 'Things fall apart', 'Chinua Achebe'),
-    ];
+    this.books = [];
     this.newTitle = document.querySelector('form #title');
     this.newAuthor = document.querySelector('form #author');
     this.addButton = document.querySelector('#add');
     this.shelve = document.querySelector('.shelve');
-    this.addBook = this.addBook.bind(this);
-    this.displayBooks = this.displayBooks.bind(this);
-    // this.navigationBar = this.navigationBar.bind(this);
-    this.date = new Date();
+    this.currentDate = DateTime.now();
   }
 
-  // moving the  saveToStorage and getBooksFromStorage functions into the Library class
-  saveToStorage() {
-    localStorage.setItem('collections', JSON.stringify(this.books));
-  }
-
-  getBooksFromStorage() {
-    const storedBooks = localStorage.getItem('collections');
-    if (storedBooks) {
-      this.books = JSON.parse(storedBooks);
-    }
-  }
-
-  //   Creating a displayBooks method in the Library class
-  displayBooks() {
+  displayBooks = () => {
     this.shelve.innerHTML = '';
     this.books.forEach((book, i) => {
-      // creating the elements that form a book div
       const bookDiv = document.createElement('div');
       bookDiv.classList.add('book-div');
 
@@ -46,26 +27,22 @@ class Library {
       bookDiv.innerHTML += `<h2>"${book.title}" by ${book.author}</h2>`;
       bookDiv.appendChild(button);
 
-      // append the remove button and the horizontal rule to the book div
-      // append the book div to the DOM
       this.shelve.appendChild(bookDiv);
     });
 
     const removeBtns = document.querySelectorAll('.remove');
     removeBtns.forEach((removeBtn, btnIndex) => {
       removeBtn.addEventListener('click', () => {
-        // console.log(this.books)
         this.books = this.books.filter((book) => book.id !== btnIndex);
-        // console.log(this.books)
         const removeBtnParent = removeBtn.parentNode;
         removeBtnParent.remove();
-        this.saveToStorage();
+        Storage.saveToStorage(this.books);
       });
     });
     this.theDate();
   }
 
-  addBook(e) {
+  addBook = (e) => {
     if (this.newTitle.value === '' || this.newAuthor.value === '') return;
     e.preventDefault();
     let id = this.books.length;
@@ -77,28 +54,37 @@ class Library {
 
     const title = this.newTitle.value;
     const author = this.newAuthor.value;
-    const newBook = { id, title, author };
+    const newBook = new Book(id, title, author);
     this.books.push(newBook);
     this.newTitle.value = '';
     this.newAuthor.value = '';
 
     this.displayBooks();
-    this.saveToStorage();
+    Storage.saveToStorage(this.books);
   }
 
-  initialize() {
-    this.getBooksFromStorage();
+  initialize = () => {
+    this.books = Storage.getBooksFromStorage();
     this.displayBooks();
-    this.addButton.addEventListener('click', this.addBook);
+    this.addButton.addEventListener('click', this.addBook.bind(this));
     this.navigationBar();
   }
 
-  theDate() {
+  theDate= () => {
     const dateDiv = document.querySelector('#date');
-    dateDiv.innerHTML = this.date;
+    const dt = this.currentDate;
+    const day = dt.toFormat('dd');
+    const month = dt.toFormat('MMMM');
+    const year = dt.toFormat('yyyy');
+    const hour = dt.toFormat('hh');
+    const minute = dt.toFormat('mm');
+    const second = dt.toFormat('ss');
+    const amPm = dt.toFormat('a');
+    const now = `${day}-${month}-${year} ${hour}:${minute}:${second} ${amPm}`;
+    dateDiv.innerHTML = now;
   }
 
-  navigationBar() {
+  navigationBar = () => {
     const { shelve } = this;
     const addBook = document.querySelector('#add-book');
     const contact = document.querySelector('.contact');
@@ -106,7 +92,7 @@ class Library {
 
     const links = document.querySelectorAll('header nav ul li');
     links.forEach((link, index) => {
-      link.onclick = function linkCaller() {
+      link.onclick = () => {
         if (index === 0) {
           shelve.style.display = 'block';
           addBook.style.display = 'none';
@@ -117,20 +103,25 @@ class Library {
           links[2].style.backgroundColor = 'rgba(241, 102, 102, 0.1)';
         } else if (index === 1) {
           shelve.style.display = 'none';
-          addBook.style.display = 'block';
+          addBook.style.display = 'flex';
           contact.style.display = 'none';
           short.style.display = 'none';
           links[1].style.backgroundColor = 'rgba(241, 102, 102, 0.9)';
           links[0].style.backgroundColor = 'rgba(241, 102, 102, 0.1)';
           links[2].style.backgroundColor = 'rgba(241, 102, 102, 0.1)';
-        } else {
+        } else if (index === 2) {
           shelve.style.display = 'none';
           addBook.style.display = 'none';
-          contact.style.display = 'block';
+          contact.style.display = 'flex';
           short.style.display = 'none';
           links[2].style.backgroundColor = 'rgba(241, 102, 102, 0.9)';
           links[0].style.backgroundColor = 'rgba(241, 102, 102, 0.1)';
           links[1].style.backgroundColor = 'rgba(241, 102, 102, 0.1)';
+        } else {
+          shelve.style.display = 'none';
+          addBook.style.display = 'none';
+          contact.style.display = 'none';
+          short.style.display = 'block';
         }
       };
     });
@@ -139,5 +130,3 @@ class Library {
 
 const myLibrary = new Library();
 myLibrary.initialize();
-
-setInterval(Library.theDate, 1000)
