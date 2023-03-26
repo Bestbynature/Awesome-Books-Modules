@@ -1,6 +1,6 @@
+import { DateTime } from './modules/time_date.js';
 import Book from './modules/Book.js';
 import Storage from './modules/storage.js';
-import DateTime from './node_modules/luxon/src/datetime.js';
 
 export default class Library {
   constructor() {
@@ -9,7 +9,7 @@ export default class Library {
     this.newAuthor = document.querySelector('form #author');
     this.addButton = document.querySelector('#add');
     this.shelve = document.querySelector('.shelve');
-    this.currentDate = DateTime.now();
+    this.currenttimeDate = DateTime.now();
   }
 
   displayBooks = () => {
@@ -72,16 +72,20 @@ export default class Library {
 
   theDate= () => {
     const dateDiv = document.querySelector('#date');
-    const dt = this.currentDate;
-    const day = dt.toFormat('dd');
-    const month = dt.toFormat('MMMM');
-    const year = dt.toFormat('yyyy');
-    const hour = dt.toFormat('hh');
-    const minute = dt.toFormat('mm');
-    const second = dt.toFormat('ss');
-    const amPm = dt.toFormat('a');
-    const now = `${day}-${month}-${year} ${hour}:${minute}:${second} ${amPm}`;
-    dateDiv.innerHTML = now;
+
+    setInterval(() => {
+      this.currenttimeDate = DateTime.now();
+      const dt = this.currenttimeDate;
+      const day = dt.toFormat('dd');
+      const month = dt.toFormat('MMMM');
+      const year = dt.toFormat('yyyy');
+      const hour = dt.toFormat('hh');
+      const minute = dt.toFormat('mm');
+      const second = dt.toFormat('ss');
+      const amPm = dt.toFormat('a');
+      const now = `${day}-${month}-${year} ${hour}:${minute}:${second} ${amPm}`;
+      dateDiv.innerHTML = now;
+    }, 1000);
   }
 
   navigationBar = () => {
